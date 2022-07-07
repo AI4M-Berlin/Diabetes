@@ -1,5 +1,0 @@
-import extractors
-import transformers
-
-perfusion = extractors.CSVExtractor("../../data/cerebral_perfusion_data/data_description/GE-75_data_summary_table.csv").extract()
-stroke = extractors.CSVExtractor("../../data/cerebral_perfusion_data/data_description/GE-75_data_summary_table.csv").extract()
