@@ -17,6 +17,7 @@ dataset_2 as "perfusion dataset"
 ├── diabetes_project.yml
 ├── requirements.txt
 ├── environment.yml
+├── module
 └── README.md
 ```
 
@@ -28,6 +29,7 @@ dataset_2 as "perfusion dataset"
 
 **data_exploration/**: overview of found datasets for this project. The objective was to analyze the relevance of multiple datasets for our use case
 
+**module/**: contains custom module CSV_cleaner integrating functions for checking consistency and clean dataframe. The documentation is available in docs/build/html/
 
 ## Environment
 Two ways, if you want to have the exact same environment as the one used during this project you should use the **environment.yml** file that includes dependancies. On the other hand if you just want the main librairies used **requirements.txt**
