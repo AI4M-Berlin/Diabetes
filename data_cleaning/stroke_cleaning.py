@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys 
+sys.path.append('../module/CSV_cleaner')
+
 # Libraries
 import argparse
 import pandas as pd
 import pickle
 import re
 import numpy as np
-import cleaning_module as cleaning
+import cleaner as cl
 
 # Constants
 default_filepath = "../data/cerebral_elderly_stroke/subjects.csv"
-
+#python stroke_cleaning.py -p ../data/cerebral_elderly_stroke/subjects.csv -v -o clean_data/stroke_clean_v1.csv
 
 # Arguments
 parser = argparse.ArgumentParser(description='data cleaning arguments for the perfusion dataset')
@@ -41,55 +44,20 @@ df.dropna(how='all', axis='index', inplace=True)
 ##  String cleaning
 if args.verbose:
     print('String cleaning')
-cleaning.clean_column_name(df)
-cleaning.clean_str_column(df)
+df = cl.clean_column_name(df)
+df = cl.clean_str_column(df)
 
-## Study features Filter
+## Clean from file
 if args.verbose:
-    print('Study features Filter')
-df.drop(labels=stroke_dict["study_measures"], axis="columns", inplace=True)
+    print('Cleaning from file')
+df = cl.clean_from_dict(df, stroke_dict)
 
-
-## Bio measures Filter
-if args.verbose:
-    print('Bio measures Filter')
-df.drop(labels=stroke_dict["bio_measures"], axis="columns", inplace=True)
-
-## Cognitives Tests Filter
-if args.verbose:
-    print('Cognitive Tests Filter')
-df.drop(labels=stroke_dict["cognitive_tests"], axis="columns", inplace=True)
-
-## Irrelevant features Filter
-if args.verbose:
-    print("Irrelevant Features")
-df.drop(labels=stroke_dict["irrelevant_features"], axis="columns", inplace=True)
-
-## Inconsistency
-### patients annotated with and without diabetes/hypertension/stroke
-if args.verbose:
-    print("Inconsistent patients")
-inconsistent_patients_index = df[df["patient id"].isin(stroke_dict["inconsistent_patients"])].index
+## Drop row
+inconsistent_patients_index = df[df["patient id"].isin(stroke_dict["drop_row"])].index
 df.drop(labels=inconsistent_patients_index, axis='index', inplace=True)
-
-### spelling
-unknown = re.compile("(unknown)")
-no = re.compile("(^no$)|(^n$)")
-yes = re.compile("(^yes$)|(^y$)|(^ye$)")
-df = df.replace(to_replace = {yes:cleaning.YES_REPLACEMENT, 
-                              no: cleaning.NO_REPLACEMENT, 
-                              unknown: np.nan}, 
-                              regex=True)
 
 ### wrong column type
 df["dm family history"] = pd.to_numeric(df["dm family history"], errors='ignore', downcast='integer')
-
-
-## Redundancy 
-if args.verbose:
-    print('Redundancy')
-df.drop(labels=stroke_dict["redundant_features"], axis='columns', inplace=True)
-
 
 ## Missing value
 if args.verbose:

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import sys 
+sys.path.append('../module/CSV_cleaner')
 
 # Libraries
 import argparse
@@ -7,11 +9,12 @@ import pandas as pd
 import pickle
 import re
 import numpy as np
-import cleaning_module as cleaning
+import cleaner as cl
 
 
 # Constants
 default_filepath = "../data/cerebral_perfusion_data/data_description/GE-75_data_summary_table.csv"
+#python perfusion_cleaning.py -p ../data/cerebral_perfusion_data/data_description/GE-75_data_summary_table.csv -v -o clean_data/perfusion_v1.csv
 
 
 # Arguments
@@ -34,52 +37,28 @@ df = pd.read_csv(args.path)
 
 # Cleaning
 
+## Missing data
+if args.verbose:
+    print('Missing data')
+df.dropna(how='all', axis='columns', inplace=True)
+df.dropna(how='all', axis='index', inplace=True)
+
 ##  String cleaning
 if args.verbose:
     print('String cleaning')
-cleaning.clean_column_name(df)
-cleaning.clean_str_column(df)
+df = cl.clean_column_name(df)
+df = cl.clean_str_column(df)
 
-## MRI features Filter
+## Clean from file
 if args.verbose:
-    print('MRI features Filter')
-df.drop(labels=perfusion_dict["brain_measures"], axis="columns", inplace=True)
+    print('Cleaning from file')
+df = cl.clean_from_dict(df, perfusion_dict)
 
-## Bio measures Filter
-if args.verbose:
-    print('Bio measures Filter')
-df.drop(labels=perfusion_dict["bio_measures"], axis="columns", inplace=True)
-
-## Cognitives Tests Filter
-if args.verbose:
-    print('Cognitive Tests Filter')
-df.drop(labels=perfusion_dict["cognitive_tests"], axis="columns", inplace=True)
-
-## Irrelevant features Filter
-if args.verbose:
-    print('Medications Filter')
-df.drop(labels=perfusion_dict["irrelevant_features"], axis="columns", inplace=True)
 
 ## Inconsistency
 ### patients annotated with and without diabetes
-inconsistent_patients_index = df[df["patient id"].isin(perfusion_dict["inconsistent_patients"])].index
+inconsistent_patients_index = df[df["patient id"].isin(perfusion_dict["drop_row"])].index
 df.drop(labels=inconsistent_patients_index, axis='index', inplace=True)
-
-
-### spelling
-unknown = re.compile("(unknown)")
-no = re.compile("(^no$)|(^n$)")
-yes = re.compile("(^yes$)|(^y$)|(^ye$)")
-latino = re.compile("(non h/l)|(nonh/l)")
-typo = re.compile("(^h/$)|(ch)")
-df = df.replace(to_replace = {yes:cleaning.YES_REPLACEMENT, 
-                              no: cleaning.NO_REPLACEMENT, 
-                              unknown: np.nan,
-                              latino: 'non h/l',
-                              typo: np.nan}, 
-                              regex=True)
-
-df.rename(mapper={'dm nondm stroke':'diabetes'}, axis=1, inplace=True)
 
 ### wrong column type
 df["dm family history"] = pd.to_numeric(df["dm family history"], errors='ignore', downcast='integer')
