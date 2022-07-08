@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSV_cleaner.cleaner &mdash; cleaning module 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> cleaning module
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">cleaning module</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>CSV_cleaner.cleaner</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for CSV_cleaner.cleaner</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span><span class="p">,</span> <span class="n">Style</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="c1"># FUNCTIONS </span>
+
+<span class="c1">#### CLEANING </span>
+<div class="viewcode-block" id="clean_column_name"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.clean_column_name">[docs]</a><span class="k">def</span> <span class="nf">clean_column_name</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Clean column names </span>
+
+<span class="sd">    put column names in lower case \n</span>
+<span class="sd">    remove &quot;,&quot;, &quot;:&quot;, &quot;-&quot; \n</span>
+<span class="sd">    remove spaces at the beginning and the end of the str \n</span>
+<span class="sd">    replace &#39;_&#39; by &quot; &quot; </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas dataframe) : dataframe to clean</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas dataframe: a copy of the dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(,)|(:)|(-)&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(_)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">table_copy</span></div>
+
+
+<div class="viewcode-block" id="clean_str_column"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.clean_str_column">[docs]</a><span class="k">def</span> <span class="nf">clean_str_column</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Clean string type cell of pandas dataframe  </span>
+
+<span class="sd">    put str in lower case \n</span>
+<span class="sd">    remove &quot;,&quot;, &quot;:&quot;, &quot;-&quot; \n</span>
+<span class="sd">    remove spaces at the beginning and the end of the str \n</span>
+<span class="sd">    replace &#39;_&#39; by &quot; &quot; </span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas dataframe) : dataframe to clean</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas dataframe: a copy of the dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">applymap</span><span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">applymap</span><span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(,)|(:)|(-)&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">applymap</span><span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;(_)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">))</span>
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">applymap</span><span class="p">((</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">table_copy</span></div>
+
+
+<div class="viewcode-block" id="clean_from_dict"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.clean_from_dict">[docs]</a><span class="k">def</span> <span class="nf">clean_from_dict</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Clean dataframe from a dictionnary</span>
+
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas dataframe) : dataframe to clean</span>
+<span class="sd">        dictionnary (dict) : dictionnary must be: \n</span>
+<span class="sd">        \t {&quot;drop_col&quot;: columns to drop as list, </span>
+<span class="sd">        \t &quot;replace&quot;: dictionnary of str to replace (see pandas.DataFrame.replace()), </span>
+<span class="sd">        \t rename: dictionnary of column to rename pandas.DataFrame.rename()}</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas dataframe: a copy of the dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> 
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;drop_col&quot;</span><span class="p">:</span>
+            <span class="n">table_copy</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;replace&quot;</span><span class="p">:</span>
+            <span class="n">table_copy</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;rename&quot;</span><span class="p">:</span> 
+            <span class="n">table_copy</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> feature doesn&#39;t exist, check spelling please&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">table_copy</span></div>
+
+
+<span class="c1">### CHECKING</span>
+<div class="viewcode-block" id="cell_type_warnings"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.cell_type_warnings">[docs]</a><span class="k">def</span> <span class="nf">cell_type_warnings</span><span class="p">(</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;    Check if cell type are consistent across columns</span>
+
+<span class="sd">    Check if the majority cell type is consistent with dtype (pandas dataframe). Note that str type is considered as equel to object type)</span>
+<span class="sd">    Check if there are multiple types per column. Note: ignore NA</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas.DataFrame): dataframe to clean</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas.DataFrame: dataframe with the majority type found per column and dtype of that same column</span>
+<span class="sd">        pandas.DataFrame: dataframe with type count per column for column with more than one type</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+
+    <span class="n">table_copy</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">formatwarning</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+    <span class="n">cell_type</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">type_comparaison</span> <span class="o">=</span> <span class="n">cell_type</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">table_copy</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+    
+    <span class="n">str_object</span> <span class="o">=</span> <span class="n">type_comparaison</span><span class="p">[(</span><span class="n">type_comparaison</span><span class="p">[</span><span class="s2">&quot;self&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">str</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">type_comparaison</span><span class="p">[</span><span class="s2">&quot;other&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">object</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">type_comparaison</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">str_object</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">type_comparaison</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">mapper</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;self&quot;</span><span class="p">:</span> <span class="s2">&quot;majority_cell_type&quot;</span><span class="p">,</span> <span class="s2">&quot;other&quot;</span><span class="p">:</span> <span class="s2">&quot;pandas_type&quot;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">type_comparaison</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span><span class="si">}</span><span class="s2">WARNING: dtypes assigned to the following columns are not consistent with the cell type </span><span class="si">{</span><span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">type_comparaison</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="n">cell_type_count</span> <span class="o">=</span> <span class="n">table_copy</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">na_action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+    <span class="n">cell_type_count_warning</span> <span class="o">=</span> <span class="n">cell_type_count</span><span class="p">[</span><span class="n">cell_type_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cell_type_count_warning</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Fore</span><span class="o">.</span><span class="n">YELLOW</span><span class="si">}</span><span class="s2">WARNING: Following columns contain multiple data types </span><span class="si">{</span><span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cell_type_count</span><span class="p">[</span><span class="n">cell_type_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">type_comparaison</span><span class="p">,</span> <span class="n">cell_type_count_warning</span></div>
+
+<div class="viewcode-block" id="get_unique_value_col"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.get_unique_value_col">[docs]</a><span class="k">def</span> <span class="nf">get_unique_value_col</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes unique value per column</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas.DataFrame): dataframe to use</span>
+<span class="sd">        string (bool, optional): Compute unique value only for column of type str. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas.DataFrame: return pandas dataframe with set of unique value and column name as index</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unique_value</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">unique_value_str</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">unique_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">col</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">string</span> <span class="ow">and</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;patient id&#39;</span><span class="p">:</span>
+            <span class="n">unique_value_str</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="n">col</span><span class="p">])))</span>
+    
+    <span class="k">if</span> <span class="n">string</span><span class="p">:</span> 
+        <span class="c1">#even when the column dtype is str, some values are not string</span>
+        <span class="n">unique_value_str_clean</span> <span class="o">=</span> <span class="n">unique_value_str</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">unique_value_str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+                <span class="n">unique_value_str_clean</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">unique_value_str_clean</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;unique_value&quot;</span><span class="p">:</span> <span class="n">unique_value</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> </div>
+
+
+<div class="viewcode-block" id="find_features"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.find_features">[docs]</a><span class="k">def</span> <span class="nf">find_features</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find column name that either contain regex in its name or in its values</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas.DataFrame): dataframe to use</span>
+<span class="sd">        regex (regular expression): _description_</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: column names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+    
+    <span class="c1">#Search in name columns</span>
+    <span class="n">results_columns</span> <span class="o">=</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">table</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">r</span><span class="p">)]</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+    
+    <span class="c1">#Search in values </span>
+    <span class="n">str_columns</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">dtypes</span><span class="p">[</span><span class="n">table</span><span class="o">.</span><span class="n">dtypes</span> <span class="o">==</span> <span class="nb">object</span><span class="p">]</span><span class="o">.</span><span class="n">index</span> <span class="c1">#str columns</span>
+    <span class="n">results_value</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="n">str_columns</span><span class="p">]</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+    
+    <span class="c1">#combine results</span>
+    <span class="n">results_columns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">results_value</span><span class="p">[</span><span class="n">results_value</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">results_columns</span></div>
+
+<span class="c1">### PLOTING</span>
+<div class="viewcode-block" id="plot_na"><a class="viewcode-back" href="../../CSV_cleaner.html#CSV_cleaner.cleaner.plot_na">[docs]</a><span class="k">def</span> <span class="nf">plot_na</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot NA count of column or index</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        table (pandas.DataFrame): _description_</span>
+<span class="sd">        axis (str or int): {index (0), columns (1)}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        _type_: _description_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">na_count</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="s1">&#39;features&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="s1">&#39;missing value count&#39;</span><span class="p">}</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">na_count</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="s1">&#39;number of missing value&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="s1">&#39;number of patients&#39;</span><span class="p">}</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">na_count</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">(),</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">bargap</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Victoria FATHI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
